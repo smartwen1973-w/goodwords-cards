@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#315b54">
+<title>說好話的力量｜互動翻卡原型</title>
+<style>
+:root{--ink:#263b38;--muted:#667b76;--paper:#fbfaf5;--green:#315b54;--mint:#e6f0e9;--rose:#f5e7e2;--gold:#e8d8a8;--line:#d8e0d8;--shadow:0 12px 34px rgba(38,59,56,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.65}
+header{background:linear-gradient(125deg,#315b54,#53786c);color:white;padding:24px 20px 28px;text-align:center}
+header .eyebrow{letter-spacing:.18em;font-size:.78rem;opacity:.9}h1{font-size:clamp(1.6rem,5vw,2.55rem);margin:6px 0;font-weight:750}header p{margin:0 auto;max-width:720px;color:#edf5ef}
+main{max-width:1120px;margin:auto;padding:20px 16px 42px}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:18px}
+select,button{font:inherit;border-radius:12px;border:1px solid var(--line);padding:10px 14px;background:white;color:var(--ink)}
+button{cursor:pointer;font-weight:650;transition:transform .15s,box-shadow .15s}button:hover{transform:translateY(-1px);box-shadow:0 5px 12px #263b3815}button:focus-visible,select:focus-visible,.flip-card:focus-visible{outline:3px solid #bd9e4b;outline-offset:3px}
+.primary{background:var(--green);color:white;border-color:var(--green)}.quiet{background:transparent}.spacer{flex:1}.status{font-size:.9rem;color:var(--muted)}
+.intro{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:20px;color:#49615b;font-size:.95rem}
+.workspace{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:18px;align-items:start}
+.draw-panel,.reflection{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:14px}.panel-head h2{margin:0;font-size:1.08rem}
+.pill{font-size:.78rem;background:var(--mint);color:var(--green);padding:4px 9px;border-radius:99px;white-space:nowrap}
+.flip-card{width:100%;min-height:360px;border:0;padding:0;background:transparent;perspective:1000px;box-shadow:none!important;transform:none!important;text-align:left}
+.card-inner{position:relative;min-height:360px;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.75,.25,1);border-radius:18px}
+.flip-card.is-flipped .card-inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid #cddbd1;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:26px 22px;overflow:auto}
+.front-face{background:radial-gradient(circle at top right,#fff9e8 0,transparent 35%),linear-gradient(145deg,#e7f1e9,#f7f5e9)}
+.back-face{background:linear-gradient(145deg,#f8e9e3,#fffaf3);transform:rotateY(180deg);align-items:flex-start;text-align:left;justify-content:flex-start}
+.card-meta{font-size:.8rem;letter-spacing:.1em;color:#58746b;margin-bottom:12px}.card-title{font-size:1.15rem;font-weight:750;margin-bottom:10px}.card-words{font-size:clamp(1.25rem,3vw,1.7rem);font-weight:750;line-height:1.7;white-space:pre-line;max-width:28ch}.tap-hint{margin-top:18px;color:#647d74;font-size:.85rem}
+.back-face h3{font-size:1.25rem;margin:8px 0 10px}.back-face p{margin:0 0 16px}.label{font-size:.78rem;letter-spacing:.08em;color:#7b6558;font-weight:750}.situation{border-left:3px solid #cba48f;padding-left:12px;color:#654f46}.feedback{font-size:1.07rem;font-weight:600;color:#443b37}
+.card-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.card-actions button{flex:1}
+.reflection h2{font-size:1.08rem;margin:0 0 8px}.reflection .sub{font-size:.9rem;color:var(--muted);margin:0 0 16px}
+.prompt{border-radius:12px;background:#f3f6f0;padding:12px 14px;margin:12px 0}.prompt strong{display:block;font-size:.85rem;color:var(--green);margin-bottom:4px}
+textarea{width:100%;min-height:105px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;background:#fffefa;color:var(--ink)}
+.small-note{font-size:.82rem;color:var(--muted);margin-top:10px}
+.deck-section{margin-top:28px}.deck-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap}.deck-head h2{margin:0;font-size:1.2rem}.deck-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:14px}
+.mini{min-height:105px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:12px;text-align:left;display:flex;flex-direction:column;gap:5px}
+.mini .n{font-size:.78rem;color:var(--muted)}.mini .t{font-weight:750}.mini .cat{font-size:.75rem;color:var(--green)}.mini.active{border:2px solid var(--green);background:var(--mint)}
+footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px}
+@media(max-width:760px){.workspace{grid-template-columns:1fr}.flip-card,.card-inner{min-height:340px}.deck-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.draw-panel,.reflection{padding:14px}.toolbar select{flex:1;min-width:145px}.spacer{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">CLASSROOM · COUNSELING · REFLECTION</div><h1>說好話的力量</h1><p>40 張互動翻卡｜讓一句話，成為理解自己與靠近彼此的起點</p></header>
+<main>
+<div class="intro"><strong>使用方式：</strong>先選擇卡牌類別，再抽一張卡。點擊卡片翻面，閱讀情境與回饋語句。課堂可用於同儕對話；諮商可用於情緒命名、關係探索與自我對話。分享始終自願，不需要說出自己尚未準備好的事。</div>
+<div class="toolbar">
+<label for="category">卡牌類別</label><select id="category"><option value="全部">全部 40 張</option><option>同在</option><option>界線</option><option>修復</option><option>力量</option></select>
+<button class="primary" id="draw">抽一張卡</button><button id="next">下一張未抽卡</button><button class="quiet" id="reset">重新洗牌</button><span class="spacer"></span><span class="status" id="status" aria-live="polite">尚未抽卡</span>
+</div>
+<div class="workspace">
+<section class="draw-panel">
+<div class="panel-head"><h2>你的這一張卡</h2><span class="pill" id="catPill">等待抽卡</span></div>
+<button class="flip-card" id="flipCard" aria-label="翻開卡片" aria-pressed="false">
+<div class="card-inner">
+<div class="face front-face"><div class="card-meta" id="frontMeta">說好話的力量 · 40 張</div><div class="card-title" id="frontTitle">準備好時，抽一張卡</div><div class="card-words" id="frontWords">讓一句溫柔而真實的話，先被看見。</div><div class="tap-hint">點擊卡片，翻看情境與回饋 ↻</div></div>
+<div class="face back-face"><div class="label">情境提示</div><p class="situation" id="backSituation">抽卡後，這裡會顯示對應的情境。</p><div class="label">回饋語句</div><p class="feedback" id="backFeedback">每張字卡都會對應同編號回饋卡。</p><div class="small-note">可讀一遍、改寫成自己的話，或只在心裡感受。</div></div>
+</div></button>
+<div class="card-actions"><button id="reveal" class="primary">翻開／翻回</button><button id="save">加入本次討論清單</button></div>
+</section>
+<aside class="reflection">
+<h2>把卡片連回生活</h2><p class="sub">可依課堂或諮商情境，挑選一個問題慢慢談。</p>
+<div class="prompt"><strong>覺察</strong><span id="q1">這張卡裡，哪一個字或句子最吸引你？為什麼？</span></div>
+<div class="prompt"><strong>連結</strong><span id="q2">這句話適合在什麼時候對自己或別人說？</span></div>
+<div class="prompt"><strong>練習</strong><span id="q3">如果換成你自己的語氣，你會怎麼說？</span></div>
+<label for="note">我的想法／帶領者備註（僅留在此頁面）</label><textarea id="note" placeholder="可以只寫關鍵字，也可以留白。重新載入頁面後內容不會保留。"></textarea>
+<p class="small-note">隱私提醒：此原型不會上傳筆記或建立個人帳號。若在投影畫面操作，請勿輸入可辨識個人的敏感內容。</p>
+</aside>
+</div>
+<section class="deck-section">
+<div class="deck-head"><div><h2>40 張卡牌總覽</h2><div class="status">點選任一卡片即可直接閱讀；同編號字卡與回饋語句成對呈現。</div></div><span class="pill" id="remaining">40 張可抽</span></div>
+<div class="deck-grid" id="deckGrid"></div>
+</section>
+<section class="deck-section">
+<div class="deck-head"><div><h2>本次討論清單</h2><div class="status">方便課堂小組或諮商結束前回顧；可移除個別卡片。</div></div><button id="clearSaved">清空清單</button></div>
+<div id="savedList" class="intro">尚未加入卡片。</div>
+</section>
+</main>
+<footer>互動原型 · 來源卡牌文字依原始《說好話的力量－40張好話卡全集》整理；本頁目前為本機 HTML 原型，尚未發布成公開網址。</footer>
+<script>
+const CARDS = [{"num": 1, "category": "同在", "title": "微光", "front": "你不需要立刻好起來，\n黑暗裡我陪你坐著。", "situation": "［情境：當自己/對方深陷低潮、無助悲傷時］", "feedback": "“看你這麼難熬，我不知道該說什麼才能幫上忙，但我會一直坐在這裡陪你。”"}, {"num": 2, "category": "同在", "title": "看見", "front": "你的辛苦不是無理取鬧，\n我看見你已經盡力了。", "situation": "［情境：當自己/對方感到努力被否定、委屈受挫時］", "feedback": "“這件事換成任何人來面對都很吃力。你已經撐了很久，想哭就哭出來，沒關係。”"}, {"num": 3, "category": "同在", "title": "留白", "front": "不想說話也沒關係，\n沈默也是一種陪伴。", "situation": "［情境：當自己/對方情緒混亂、暫時不想開口時］", "feedback": "“如果你現在不想解釋或整理思緒，我們就安靜待著，等你準備好再說。”"}, {"num": 4, "category": "同在", "title": "容器", "front": "所有真實的情緒，\n都值得被安全安放。", "situation": "［情境：當自己/對方壓抑憤怒或自責時］", "feedback": "“感到生氣或失望都是很正常的。在我面前，你不需要永遠扮演堅強的樣子。”"}, {"num": 5, "category": "同在", "title": "同行", "front": "生命是一場迷宮，\n我們不必急著找出唯一的出口。", "situation": "［情境：當面臨升學、未來茫然不知所措時］", "feedback": "“雖然我沒有現成的答案能替你解套，但接下來的每一步，我都願意陪你一起面對。”"}, {"num": 6, "category": "同在", "title": "卸甲", "front": "卸下盔甲的你，\n依然無比珍貴。", "situation": "［情境：當自己/對方在團體中武裝自己、身心俱疲時］", "feedback": "“今天在別人面前你演得很辛苦了吧？回到這裡，把面具拿下來好好喘口氣。”"}, {"num": 7, "category": "同在", "title": "承接", "front": "你的眼淚不是軟弱，\n而是靈魂在呼吸。", "situation": "［情境：當自己/對方不敢在人前哭泣時］", "feedback": "“想哭就放心哭，這不代表你認輸，只是說明你真的太在乎、太努力了。”"}, {"num": 8, "category": "同在", "title": "無條件", "front": "我喜歡你，不是因為你的表現，\n而是因為你就是你。", "situation": "［情境：當考試考砸、競賽失利自我懷疑時］", "feedback": "“考砸了、表現失常了，都不會改變我們之間的交情，你依然是值得被愛的朋友。”"}, {"num": 9, "category": "同在", "title": "定錨", "front": "風暴再大，\n我都會站在你身邊當你的錨。", "situation": "［情境：當遭受流言蜚語或孤立時］", "feedback": "“不管外面的流言蜚語怎麼傳，只要你需要，轉頭我就在。”"}, {"num": 10, "category": "同在", "title": "接納", "front": "接受自己的不完美，\n本就是成熟的開始。", "situation": "［情境：當自己/對方對犯錯極度苛責自己時］", "feedback": "“我們都會搞砸事情、都有卡關的時候，不需要為這點失誤把整個人否定掉。”"}, {"num": 11, "category": "界線", "title": "尊重", "front": "我很在乎我們的交情，\n但這句話刺痛我了。", "situation": "［情境：當朋友開過火玩笑或言語越界時］", "feedback": "“我知道你可能只是開玩笑，但剛才那個說法讓我很受傷，下次別再這樣說好嗎？”"}, {"num": 12, "category": "界線", "title": "自主", "front": "我可以配合團隊，\n但我不能勉強自己消失。", "situation": "［情境：當小組報告分工不公或被予取予求時］", "feedback": "“這份分工如果全部由我承擔會超出我的負荷，我們需要重新討論彼此能負責的部分。”"}, {"num": 13, "category": "界線", "title": "暫停", "front": "我現在需要一點空間，\n等我們平靜後再來談。", "situation": "［情境：當雙方情緒高漲即將爆發衝突時］", "feedback": "“我感覺我們現在情緒都很滿，再吵下去會說出後悔的話。我們先各自冷靜半小時。”"}, {"num": 14, "category": "界線", "title": "真實", "front": "討好換不來真正的靠近，\n我選擇說出真話。", "situation": "［情境：當害怕拒絕他人而內心煎熬時］", "feedback": "“如果我總是不敢說我不喜歡，我們就沒辦法真正認識彼此。這次我想誠實告訴你我的想法。”"}, {"num": 15, "category": "界線", "title": "界限", "front": "你的情緒是你的課題，\n我不需要全部扛在肩上。", "situation": "［情境：當被當作情緒垃圾桶感到窒息時］", "feedback": "“我願意聽你抱怨，但我不是你的情緒垃圾桶，請不要用攻擊的語氣對我說話。”"}, {"num": 16, "category": "界線", "title": "拒絕", "front": "溫柔地說『不』，\n是對彼此時間最大的尊重。", "situation": "［情境：當面對不合適的邀約或請求時］", "feedback": "“很謝謝你找我，但評估我目前的體力與時間，這次我真的無法參與，祝你們順利。”"}, {"num": 17, "category": "界線", "title": "防護", "front": "我有權利守護我的隱私，\n不被過度刺探。", "situation": "［情境：當他人過度探聽隱私或八卦時］", "feedback": "“這件事涉及我的私人空間，我目前還沒準備好公開聊，請容許我先保留。”"}, {"num": 18, "category": "界線", "title": "原則", "front": "友誼需要體諒，\n但不能用犧牲原則作為籌碼。", "situation": "［情境：當被情勒要求作弊或違反校規時］", "feedback": "“我很珍惜你這個朋友，但作弊／違反規定這件事我不能幫忙，希望你能理解。”"}, {"num": 19, "category": "界線", "title": "同盟", "front": "健康的關係，\n允許彼此擁有不同的觀點。", "situation": "［情境：當彼此價值觀或意見不合時］", "feedback": "“我和你的看法不太一樣，但這不影響我們是好朋友，我們各自保留想法就好。”"}, {"num": 20, "category": "界線", "title": "覺察", "front": "當關係讓你感到窒息，\n記得退後一步重新呼吸。", "situation": "［情境：當人際黏著度過高感到內耗時］", "feedback": "“我需要一點時間專注在我自己的生活與課業上，這段時間我想先留點空間給自己。”"}, {"num": 21, "category": "修復", "title": "格局", "front": "道歉不是認輸，\n而是我比面子更在乎你。", "situation": "［情境：當自己一時衝動口出惡言後］", "feedback": "“剛才我口氣太衝、講話太難聽了，對不起。我不是故意的，我真的很看重我們的友情。”"}, {"num": 22, "category": "修復", "title": "釐清", "front": "我是在為事情焦慮，\n不是在否定你的價值。", "situation": "［情境：當把焦慮情緒遷怒到同伴身上時］", "feedback": "“我剛才是在煩惱報告快開天窗，但我把脾氣發在你身上了，這很不妥當，謝謝你包容我。”"}, {"num": 23, "category": "修復", "title": "傾聽", "front": "我剛剛踩到你的線了，\n謝謝你願意告訴我。", "situation": "［情境：當對方表達受傷或提出抗議時］", "feedback": "“對不起，我沒意識到這件事會讓你這麼不舒服。謝謝你直接說出來，我下次會注意。”"}, {"num": 24, "category": "修復", "title": "重啟", "front": "關係出現裂痕，\n正是光照進來認識彼此的時刻。", "situation": "［情境：當衝突後想要冰釋前嫌時］", "feedback": "“經過剛才的爭執，我更了解你的底線了。我們重新來過，好嗎？”"}, {"num": 25, "category": "修復", "title": "釋懷", "front": "放下防禦的那一刻，\n我們才能真正相遇。", "situation": "［情境：當對方主動示好或道歉時］", "feedback": "“我知道你剛才也是一時心急。這口氣過了就沒事了，我們繼續把事情做好吧。”"}, {"num": 26, "category": "修復", "title": "搭橋", "front": "沈默太久會變成牆，\n我願意先遞出一把鑰匙。", "situation": "［情境：當雙方陷入冷戰僵局時］", "feedback": "“我們冷戰好幾天了，心裡都很難受對吧？中午要不要一起去福利社，我們把話講開？”"}, {"num": 27, "category": "修復", "title": "坦誠", "front": "隱瞞只會擴大距離，\n真誠才能重建信任。", "situation": "［情境：當先前有所隱瞞想重新坦白時］", "feedback": "“上次那件事我沒有第一時間跟你說實話，是我不對。我現在想坦白告訴你當時的狀況。”"}, {"num": 28, "category": "修復", "title": "承諾", "front": "真正的道歉，\n是伴隨著具體的調整行動。", "situation": "［情境：當因自己延誤造成團隊困擾時］", "feedback": "“這次是我拖延導致大家趕工，對不起。下個階段我會每天主動回報進度，絕不推託。”"}, {"num": 29, "category": "修復", "title": "解鈴", "front": "別讓無心的誤會，\n吃掉我們累積的信任。", "situation": "［情境：當聽聞風聲想要核實真相時］", "feedback": "“我聽到一些傳言，但我不想猜忌。我想親自聽你說說，當初是怎麼一回事？”"}, {"num": 30, "category": "修復", "title": "包容", "front": "我們都是邊跌倒邊長大的孩子，\n允許彼此犯錯。", "situation": "［情境：當同儕無心犯錯而內疚時］", "feedback": "“沒關係，每個人都有不小心踩雷的時候。這件事過了就翻篇，我們還是好夥伴。”"}, {"num": 31, "category": "力量", "title": "選擇", "front": "在刺激與回應之間，\n我永遠擁有選擇溫柔的自由。", "situation": "［情境：當面對他人尖酸諷刺想反擊時］", "feedback": "“面對別人的冷嘲熱諷，我不必用同樣尖銳的方式回嗆，守住自己的教養就是我的力量。”"}, {"num": 32, "category": "力量", "title": "定錨", "front": "別人的標籤定義不了你，\n你的存在本身就具備重量。", "situation": "［情境：當被他人指指點點或貼標籤時］", "feedback": "“不管群組裡怎麼酸、別人怎麼傳，只要你清楚自己是誰，那些聲音就傷不到你。”"}, {"num": 33, "category": "力量", "title": "勇敢", "front": "展現脆弱不是軟弱，\n而是極致的勇敢。", "situation": "［情境：當死撐著不敢向外求助時］", "feedback": "“向信任的朋友說一句『我需要你幫忙』，不是示弱，而是搭建彼此信任的起點。”"}, {"num": 34, "category": "力量", "title": "自愛", "front": "世界太吵的時候，\n記得先聽聽自己心裡的聲音。", "situation": "［情境：當迎合所有人而迷失自我時］", "feedback": "“在急著給別人好臉色之前，先低頭問問自己：我現在累不累？我還好嗎？”"}, {"num": 35, "category": "力量", "title": "主導", "front": "我不是受害者，\n我是自己人際關係的創造者。", "situation": "［情境：當抱怨環境糟糕無能為力時］", "feedback": "“環境也許複雜，但我可以決定我要跟誰靠近、決定我要對誰說出善意的話。”"}, {"num": 36, "category": "力量", "title": "肯定", "front": "即便今天一事無成，\n你的存在依然值得肯定。", "situation": "［情境：當經歷徹底挫折、極度低落時］", "feedback": "“今天哪怕只是好好吃頓飯、走進教室撐完一天，你都已經非常了不起了。”"}, {"num": 37, "category": "力量", "title": "發光", "front": "你不必成為別人的太陽，\n當一盞溫暖自己的小燈就好。", "situation": "［情境：當社交耗竭、過度承載他人期待時］", "feedback": "“不用逼自己迎合所有人的社交期望，顧好你的生活節奏，自然會吸引頻率相同的人。”"}, {"num": 38, "category": "力量", "title": "賦能", "front": "你口中說出的每一句話，\n都在塑造你未來的世界。", "situation": "［情境：當想說刻薄話宣洩一時之氣時］", "feedback": "“多說一句真誠的感謝、少一句酸言酸語，你正在把身邊的環境變得更值得生活。”"}, {"num": 39, "category": "力量", "title": "跨越", "front": "孤獨不是懲罰，\n而是靈魂在學習如何與自己相處。", "situation": "［情境：當落單一人感到孤立無援時］", "feedback": "“暫時落單沒什麼大不了的。這段安靜的時光，正是你認識自己最深沉力量的機會。”"}, {"num": 40, "category": "力量", "title": "相遇", "front": "願我們在孤獨的人間，\n都能溫柔且真實地相遇。", "situation": "［情境：與夥伴真誠互換祝福］", "feedback": "“謝謝你出現在我的高中生活裡，今天有你在身邊一起聽這場演講，真好。”"}];
+const qs = s => document.querySelector(s);
+let current = null;
+let remaining = [];
+let saved = [];
+const categoryEl=qs('#category');
+function filtered(){return CARDS.filter(c=>categoryEl.value==='全部'||c.category===categoryEl.value)}
+function resetDeck(){remaining=filtered().map(c=>c.num);shuffle(remaining);qs('#status').textContent='已洗牌 · '+filtered().length+' 張可抽';qs('#remaining').textContent=remaining.length+' 張可抽';}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function selectCard(c){current=c;qs('#flipCard').classList.remove('is-flipped');qs('#flipCard').setAttribute('aria-pressed','false');qs('#catPill').textContent=c.category+'卡 · #'+String(c.num).padStart(2,'0');qs('#frontMeta').textContent=c.category+'卡 · #'+String(c.num).padStart(2,'0');qs('#frontTitle').textContent='【 '+c.title+' 】';qs('#frontWords').textContent=c.front;qs('#backSituation').textContent=c.situation;qs('#backFeedback').textContent=c.feedback;qs('#status').textContent='目前卡片 #'+String(c.num).padStart(2,'0');document.querySelectorAll('.mini').forEach(b=>b.classList.toggle('active',Number(b.dataset.num)===c.num));}
+function flip(){if(!current){const f=filtered();selectCard(f[Math.floor(Math.random()*f.length)]);}qs('#flipCard').classList.toggle('is-flipped');const yes=qs('#flipCard').classList.contains('is-flipped');qs('#flipCard').setAttribute('aria-pressed',String(yes));}
+function draw(){if(!remaining.length){qs('#status').textContent='這個類別已抽完，請重新洗牌或切換類別。';return}const n=remaining.pop();selectCard(CARDS.find(c=>c.num===n));qs('#remaining').textContent=remaining.length+' 張可抽';}
+function renderGrid(){const list=filtered();qs('#deckGrid').innerHTML='';list.forEach(c=>{const b=document.createElement('button');b.className='mini';b.dataset.num=c.num;b.innerHTML=`<span class="n">#${String(c.num).padStart(2,'0')}</span><span class="t"></span><span class="cat">${c.category}卡</span>`;b.querySelector('.t').textContent=c.title;b.addEventListener('click',()=>selectCard(c));qs('#deckGrid').appendChild(b)});qs('#remaining').textContent=remaining.length+' 張可抽';}
+function renderSaved(){const box=qs('#savedList');if(!saved.length){box.textContent='尚未加入卡片。';return}box.innerHTML='';saved.forEach(n=>{const c=CARDS.find(x=>x.num===n);const row=document.createElement('div');row.style.cssText='display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e1e7df';const text=document.createElement('div');const strong=document.createElement('strong');strong.textContent='#'+String(n).padStart(2,'0')+' '+c.title;const p=document.createElement('div');p.textContent=c.front.replaceAll('\\n',' ');p.style.color='#667b76';text.append(strong,p);const btn=document.createElement('button');btn.textContent='移除';btn.addEventListener('click',()=>{saved=saved.filter(x=>x!==n);renderSaved()});row.append(text,btn);box.append(row)})}
+qs('#draw').addEventListener('click',draw);qs('#next').addEventListener('click',draw);qs('#flipCard').addEventListener('click',flip);qs('#reveal').addEventListener('click',flip);
+qs('#reset').addEventListener('click',()=>{resetDeck();renderGrid()});
+categoryEl.addEventListener('change',()=>{resetDeck();renderGrid();current=null;qs('#flipCard').classList.remove('is-flipped');qs('#frontTitle').textContent='準備好時，抽一張卡';qs('#frontWords').textContent='讓一句溫柔而真實的話，先被看見。';qs('#backSituation').textContent='抽卡後，這裡會顯示對應的情境。';qs('#backFeedback').textContent='每張字卡都會對應同編號回饋卡。';qs('#catPill').textContent='等待抽卡'});
+qs('#save').addEventListener('click',()=>{if(!current){qs('#status').textContent='請先抽一張卡，再加入討論清單。';return}if(!saved.includes(current.num))saved.push(current.num);renderSaved();qs('#status').textContent='已加入 #'+String(current.num).padStart(2,'0')+' 討論清單'});
+qs('#clearSaved').addEventListener('click',()=>{saved=[];renderSaved()});
+resetDeck();renderGrid();
+</script>
+</body></html>
